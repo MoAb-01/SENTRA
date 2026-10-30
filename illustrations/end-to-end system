@@ -1,0 +1,50 @@
+flowchart LR
+    %% -------------------------------------------------------------
+    %% TIER 1: EDGE
+    %% -------------------------------------------------------------
+    subgraph T1["Tier 1: Decentralized Edge Node"]
+        direction TB
+        C1["Physical Camera Sensor"]
+        C2["RTSP Ingestion (OpenCV)"]
+        C3["YOLOv8n Target Detection"]
+        C4["Point-in-Polygon Engine"]
+        C5["Zero-Overhead Head Slice<br/>[y : y + 0.35h]"]
+        C6["Dual Evidence Package<br/>(Full Scene + Face RoI)"]
+        C7["Payload Security (AES-256-GCM)"]
+        C8[("Local SQLite Queue<br/>(Offline Buffer)")]
+        
+        C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7
+        C7 <--> C8
+    end
+
+    %% -------------------------------------------------------------
+    %% TIER 2: BACKEND
+    %% -------------------------------------------------------------
+    subgraph T2["Tier 2: Central Backend (FastAPI)"]
+        direction TB
+        B1["C2 Gateway Service<br/>(Auth, Decrypt, Check)"]
+        B2["Event Broadcast Engine<br/>(WebSocket Hub)"]
+        B3[("Master Database<br/>(PostgreSQL)")]
+        
+        B1 --> B2
+        B1 <--> B3
+    end
+
+    %% -------------------------------------------------------------
+    %% TIER 3: PRESENTATION
+    %% -------------------------------------------------------------
+    subgraph T3["Tier 3: Tactical Web (React)"]
+        direction TB
+        W1["Administrator Console<br/>(Dynamic Geofence Canvas)"]
+        W2["Security Operator Console<br/>(Real-Time Incident Triage)"]
+        
+        W1 ~~~ W2
+    end
+
+    %% -------------------------------------------------------------
+    %% DIRECT TIER BUS CONNECTIONS
+    %% -------------------------------------------------------------
+    C7 <-->|"Encrypted Alert / ACK"| B1
+    B1 -.->|"Push Dynamic Geofence (WSS)"| C4
+    B2 -->|"Instant Alert Push (WSS)"| W2
+    W1 -->|"Deploy Zone Config (REST)"| B1
