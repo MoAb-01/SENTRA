@@ -368,9 +368,9 @@ ul {
 .marker-highlight {
   position: relative;
   display: inline-block;
-  margin: 0 4px;
+  margin: 0 3px;
   font-weight: 800;
-  font-size: 1.2em;
+  font-size: 1.22em;
   color: #171717;
   letter-spacing: -0.02em;
 }
@@ -382,10 +382,10 @@ ul {
 
 .marker-highlight-svg {
   position: absolute;
-  bottom: -1px;
-  left: -4%;
-  width: 108%;
-  height: 0.52em;
+  bottom: -4px;
+  left: -3%;
+  width: 106%;
+  height: 0.36em;
   z-index: 0;
   pointer-events: none;
 }

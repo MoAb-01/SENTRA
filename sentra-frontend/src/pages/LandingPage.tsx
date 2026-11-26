@@ -2,20 +2,26 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { translations, SupportedLang } from '../i18n';
 import { EdgePerceptionVisual } from '../components/EdgePerceptionVisual';
+import { NetworkResilienceVisual } from '../components/NetworkResilienceVisual';
+import { CommandPillarsVisual } from '../components/CommandPillarsVisual';
+import { DeveloperMindMap } from '../components/DeveloperMindMap';
 
 export const MarkerHighlight: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span className="marker-highlight">
     <span className="marker-highlight-text">{children}</span>
     <svg
       aria-hidden="true"
-      viewBox="0 0 120 18"
+      viewBox="0 0 120 14"
       preserveAspectRatio="none"
       className="marker-highlight-svg"
     >
       <path
-        d="M2 12 C 35 7, 85 6, 118 11 L 116 16 C 82 12, 36 13, 4 17 Z"
-        fill="var(--brand-orange)"
-        fillOpacity="0.55"
+        d="M3 10.5 Q 42 3.5, 117 8.5"
+        fill="none"
+        stroke="#FF5500"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeOpacity="0.82"
       />
     </svg>
   </span>
@@ -137,17 +143,17 @@ export const LandingPage: React.FC = () => {
           {/* TIER 1: Edge Perception (Text Left, Visual Right) */}
           <div className="arch-row">
             <div className="arch-content">
-              <span className="arch-step">01 / EDGE NODE</span>
               <h3>{t.architecture.tier1Title}</h3>
               <p>
-                {t.architecture.tier1Desc.split('>95%').map((part, idx, arr) => (
-                  <React.Fragment key={idx}>
-                    {part}
-                    {idx < arr.length - 1 && (
-                      <MarkerHighlight>&gt;95%</MarkerHighlight>
-                    )}
-                  </React.Fragment>
-                ))}
+                {t.architecture.tier1Desc
+                  .split(/(>95%|%95\+|\+95%)/)
+                  .map((part, idx) =>
+                    /^(>95%|%95\+|\+95%)$/.test(part) ? (
+                      <MarkerHighlight key={idx}>{part}</MarkerHighlight>
+                    ) : (
+                      <React.Fragment key={idx}>{part}</React.Fragment>
+                    )
+                  )}
               </p>
               <ul className="arch-specs">
                 <li><strong>YOLOv8n (INT8):</strong> {t.architecture.tier1Spec1}</li>
@@ -162,52 +168,52 @@ export const LandingPage: React.FC = () => {
           {/* TIER 2: Offline Outbox & Crypto (Visual Left, Text Right) */}
           <div className="arch-row arch-row-reverse">
             <div className="arch-content">
-              <span className="arch-step">02 / RESILIENCE & CRYPTO</span>
               <h3>{t.architecture.tier2Title}</h3>
-              <p>{t.architecture.tier2Desc}</p>
+              <p>
+                {t.architecture.tier2Desc
+                  .split(/(NO)/)
+                  .map((part, idx) =>
+                    part === 'NO' ? (
+                      <span key={idx} className="marker-highlight">
+                        {part}
+                      </span>
+                    ) : (
+                      <React.Fragment key={idx}>{part}</React.Fragment>
+                    )
+                  )}
+              </p>
               <ul className="arch-specs">
                 <li><strong>AES-256-GCM:</strong> {t.architecture.tier2Spec1}</li>
                 <li><strong>SQLite WAL Outbox:</strong> {t.architecture.tier2Spec2}</li>
               </ul>
             </div>
-            <div className="arch-visual">
-              <img src="/arch-outbox-crypto.png" alt="AES-256-GCM & SQLite WAL Outbox" />
+            <div className="arch-visual arch-visual-flush">
+              <NetworkResilienceVisual />
             </div>
           </div>
 
           {/* TIER 3: Command Center & Vault (Text Left, Visual Right) */}
           <div className="arch-row">
             <div className="arch-content">
-              <span className="arch-step">03 / COMMAND CENTER</span>
               <h3>{t.architecture.tier3Title}</h3>
-              <p>{t.architecture.tier3Desc}</p>
+              <p>
+                {t.architecture.tier3Desc
+                  .split(/(<1s|<1sn|1 ثانية)/)
+                  .map((part, idx) =>
+                    /^(<1s|<1sn|1 ثانية)$/.test(part) ? (
+                      <MarkerHighlight key={idx}>{part}</MarkerHighlight>
+                    ) : (
+                      <React.Fragment key={idx}>{part}</React.Fragment>
+                    )
+                  )}
+              </p>
               <ul className="arch-specs">
+                <li><strong>{t.architecture.tier3Spec3Label}</strong> {t.architecture.tier3Spec3}</li>
                 <li><strong>FastAPI + PostgreSQL 16:</strong> {t.architecture.tier3Spec1}</li>
-                <li><strong>MinIO Object Vault:</strong> {t.architecture.tier3Spec2}</li>
               </ul>
             </div>
-            <div className="arch-visual">
-              <img src="/arch-command-center.png" alt="FastAPI & React Command Center" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* G-LAB OVERLAPPING CARD SECTION */}
-      <section className="glab-section" id="innovation">
-        <div className="container">
-          <div className="glab-wrapper">
-            <div className="glab-image">
-              <span>SENTRA EDGE Ar-Ge Merkezi</span>
-            </div>
-            <div className="glab-card">
-              <div className="glab-badge">{t.glab.badge}</div>
-              <span className="glab-subtitle">{t.glab.subtitle}</span>
-              <h2>{t.glab.title}</h2>
-              <Link to={`/${currentLang}/portal`} className="glab-footer">
-                <span>{t.glab.footerText}</span>
-                <span className="glab-arrow">→</span>
-              </Link>
+            <div className="arch-visual arch-visual-flush">
+              <CommandPillarsVisual />
             </div>
           </div>
         </div>
@@ -218,13 +224,25 @@ export const LandingPage: React.FC = () => {
         <div className="container">
           <div className="social-grid">
             <article className="social-card">
-              <div className="social-img card-custom-bg">
+              <div className="social-img orange">
+                <span>LANDING PAGE UPDATE</span>
+              </div>
+              <div className="social-inner">
+                <p className="social-handle">@sentra</p>
+                <span className="social-date">26.11.2026</span>
+                <p className="social-excerpt">{t.social.card4Text}</p>
+                <a href="#about-project" className="social-more">{t.social.readMore}</a>
+              </div>
+            </article>
+
+            <article className="social-card">
+              <div className="social-img card-custom-bg-3">
                 {/* Visual image rendered via background-image from uploaded graphic */}
               </div>
               <div className="social-inner">
-                <p className="social-handle">@sentraproject</p>
-                <span className="social-date">10.10.2026</span>
-                <p className="social-excerpt">{t.social.card1Text}</p>
+                <p className="social-handle">@sentra</p>
+                <span className="social-date">15.11.2026</span>
+                <p className="social-excerpt">{t.social.card3Text}</p>
                 <a href="#about-project" className="social-more">{t.social.readMore}</a>
               </div>
             </article>
@@ -242,17 +260,24 @@ export const LandingPage: React.FC = () => {
             </article>
 
             <article className="social-card">
-              <div className="social-img card-custom-bg-3">
+              <div className="social-img card-custom-bg">
                 {/* Visual image rendered via background-image from uploaded graphic */}
               </div>
               <div className="social-inner">
-                <p className="social-handle">@sentra</p>
-                <span className="social-date">15.11.2026</span>
-                <p className="social-excerpt">{t.social.card3Text}</p>
+                <p className="social-handle">@sentraproject</p>
+                <span className="social-date">10.10.2026</span>
+                <p className="social-excerpt">{t.social.card1Text}</p>
                 <a href="#about-project" className="social-more">{t.social.readMore}</a>
               </div>
             </article>
           </div>
+        </div>
+      </section>
+
+      {/* ABOUT THE DEVELOPER */}
+      <section id="about-developer" style={{ padding: '40px 0 80px' }}>
+        <div className="container">
+          <DeveloperMindMap eyebrow={t.nav.aboutDeveloper} />
         </div>
       </section>
 
