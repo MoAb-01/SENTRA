@@ -320,7 +320,7 @@ export const LandingPage: React.FC = () => {
                 <h4>{t.footer.infoCol}</h4>
                 <ul>
                   <li><a href="#proc">{currentLang === 'tr' ? 'Yeni Bağlantı Süreçleri' : currentLang === 'en' ? 'New Connections' : 'إجراءات التوصيل'}</a></li>
-                  <li><a href="#legal">{currentLang === 'tr' ? 'Yasal Bildirimler' : currentLang === 'en' ? 'Legal Notices' : 'الإخطارات القانونية'}</a></li>
+                  <li><Link to={`/${currentLang}/privacy`}>{currentLang === 'tr' ? 'Gizlilik Politikası (KVKK)' : currentLang === 'en' ? 'Privacy & Cookies Policy' : 'سياسة الخصوصية وملفات الارتباط'}</Link></li>
                   <li><a href="#tenders">{currentLang === 'tr' ? 'İhaleler' : currentLang === 'en' ? 'Tenders' : 'المناقصات'}</a></li>
                   <li><a href="#faq">{currentLang === 'tr' ? 'Sıkça Sorulan Sorular' : currentLang === 'en' ? 'FAQs' : 'الأسئلة الشائعة'}</a></li>
                 </ul>
@@ -349,7 +349,6 @@ export const LandingPage: React.FC = () => {
           </div>
         </footer>
       </div>
-
     </div>
   );
 };

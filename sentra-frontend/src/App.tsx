@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
 import { OperationsPortal } from './pages/OperationsPortal';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
 
 export const App: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ export const App: React.FC = () => {
       {/* Language-specific endpoints */}
       <Route path="/:lang" element={<LandingPage />} />
       <Route path="/:lang/portal" element={<OperationsPortal />} />
+      <Route path="/:lang/privacy" element={<PrivacyPolicy />} />
 
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/tr" replace />} />
