@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sentra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${SENTRA_PG_DB:-sentra}
+      POSTGRES_USER: ${SENTRA_PG_USER:-sentra}
+      POSTGRES_PASSWORD: ${SENTRA_PG_PASSWORD:?Set SENTRA_PG_PASSWORD in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - sentra_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
+    container_name: sentra-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${SENTRA_MINIO_ACCESS_KEY:?Set SENTRA_MINIO_ACCESS_KEY in .env}
+      MINIO_ROOT_PASSWORD: ${SENTRA_MINIO_SECRET_KEY:?Set SENTRA_MINIO_SECRET_KEY in .env}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - sentra_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  core:
+    build:
+      context: .
+      dockerfile: core/Dockerfile
+    container_name: sentra-core
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      SENTRA_CORE_POSTGRES_DSN: postgresql://${SENTRA_PG_USER:-sentra}:${SENTRA_PG_PASSWORD}@postgres:5432/${SENTRA_PG_DB:-sentra}
+      SENTRA_CORE_MINIO_ENDPOINT: minio:9000
+      SENTRA_CORE_MINIO_ACCESS_KEY: ${SENTRA_MINIO_ACCESS_KEY}
+      SENTRA_CORE_MINIO_SECRET_KEY: ${SENTRA_MINIO_SECRET_KEY}
+      SENTRA_CORE_MINIO_BUCKET: ${SENTRA_MINIO_BUCKET:-sentra-evidence}
+      SENTRA_CORE_MINIO_SECURE: "false"
+      SENTRA_CORE_JWT_SECRET_HEX: ${SENTRA_CORE_JWT_SECRET_HEX:?Set SENTRA_CORE_JWT_SECRET_HEX in .env}
+      SENTRA_CORE_NODE_MASTER_KEY_HEX: ${SENTRA_CORE_NODE_MASTER_KEY_HEX:?Set SENTRA_CORE_NODE_MASTER_KEY_HEX in .env}
+      SENTRA_CORE_COOKIE_SECURE: ${SENTRA_CORE_COOKIE_SECURE:-false}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')\""]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  sentra_pg_data:
+  sentra_minio_data:

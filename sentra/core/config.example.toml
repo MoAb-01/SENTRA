@@ -1,0 +1,28 @@
+# SENTRA Core Gateway Configuration Example
+# Override any value via SENTRA_CORE_<UPPER_FIELD_NAME> environment variables.
+# NEVER commit real secrets to source control.
+
+postgres_dsn = "postgresql://sentra:change-me@localhost:5432/sentra"
+
+minio_endpoint = "localhost:9000"
+minio_access_key = "change-me-access-key"
+minio_secret_key = "change-me-secret-key"
+minio_bucket = "sentra-evidence"
+minio_secure = false
+presigned_ttl_sec = 300
+
+# 64 hex chars (32 random bytes) — supply via secret manager / env var
+jwt_secret_hex = ""
+# Short-lived access token (15-60 min) + long-lived rotating refresh token (7-30 days)
+access_token_expire_minutes = 15
+refresh_token_expire_days = 14
+refresh_inactivity_days = 7
+cookie_secure = true
+
+# 64 hex chars (32 random bytes) — derives per-node 256-bit keys via HKDF-SHA256
+node_master_key_hex = ""
+
+evidence_retention_days = 30
+retention_sweep_interval_sec = 3600
+
+cors_origins = ["http://localhost:5173"]
