@@ -74,19 +74,28 @@ const PILLARS: PillarCard[] = [
 
 export const CommandPillarsVisual: React.FC = () => {
   return (
-    <div
-      style={{
-        width: '100%',
-        aspectRatio: '16 / 10',
-        backgroundColor: 'transparent',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '10px',
-        direction: 'ltr',
-        userSelect: 'none',
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <>
+      <style>{`
+        .command-pillars-grid {
+          width: 100%;
+          aspect-ratio: 16 / 10;
+          background-color: transparent;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          direction: ltr;
+          user-select: none;
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        @media (max-width: 640px) {
+          .command-pillars-grid {
+            aspect-ratio: auto;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+          }
+        }
+      `}</style>
+      <div className="command-pillars-grid">
       {PILLARS.map((card) => (
         <div
           key={card.acronym}
@@ -167,6 +176,7 @@ export const CommandPillarsVisual: React.FC = () => {
           </div>
         </div>
       ))}
-    </div>
+      </div>
+    </>
   );
 };

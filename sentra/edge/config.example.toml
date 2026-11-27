@@ -1,0 +1,26 @@
+# SENTRA Edge Node Configuration Example
+# Override any field via SENTRA_<UPPER_FIELD_NAME> environment variables.
+# NEVER commit real encryption keys to source control.
+
+node_id = "550e8400-e29b-41d4-a716-446655440000"
+key_id = 1
+# Set SENTRA_ENCRYPTION_KEY_HEX via secret manager or environment variable (64 hex chars = 32 bytes)
+encryption_key_hex = ""
+
+gateway_ws_url = "wss://core.sentra.internal/ws/edge"
+# Use integer index for USB webcam (e.g., 0) or RTSP / GStreamer pipeline string
+camera_source = "rtsp://camera-user:camera-pass@192.168.10.24:554/stream1"
+
+model_path = "/opt/sentra/models/yolov8n-int8.onnx"
+confidence_threshold = 0.45
+iou_threshold = 0.45
+persistence_frames = 3
+max_miss_frames = 0
+cooldown_sec = 10.0
+
+jpeg_quality = 85
+image_format = "jpeg"
+
+db_path = "/var/lib/sentra/wal_outbox.db"
+max_outbox_bytes = 536870912
+heartbeat_interval_sec = 15.0

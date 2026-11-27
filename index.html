@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SENTRA // Autonomous AI Geofence & Surveillance Command Center</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #05070c;
+      --bg-panel: rgba(11, 16, 26, 0.88);
+      --bg-card: rgba(16, 24, 40, 0.65);
+      --border-cyan: rgba(0, 243, 255, 0.28);
+      --border-light: rgba(255, 255, 255, 0.08);
+      --cyan: #00f3ff;
+      --cyan-glow: rgba(0, 243, 255, 0.4);
+      --gold: #d4af37;
+      --gold-glow: rgba(212, 175, 55, 0.5);
+      --red: #ff1744;
+      --red-glow: rgba(255, 23, 68, 0.6);
+      --green: #00e676;
+      --text-main: #f1f5f9;
+      --text-muted: #8492a6;
+      --font-display: 'Orbitron', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-brand: 'Cinzel', serif;
+      --font-body: 'Rajdhani', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+        linear-gradient(rgba(5, 7, 12, 0.96), rgba(5, 7, 12, 0.96)),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 243, 255, 0.015) 2px, rgba(0, 243, 255, 0.015) 4px);
+    }
+
+    /* Top Studio Ribbon */
+    .studio-top-ribbon {
+      background: rgba(7, 10, 18, 0.95);
+      border-bottom: 1px solid var(--border-cyan);
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      z-index: 100;
+    }
+
+    .studio-crest {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-emblem {
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--gold);
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 8px var(--gold-glow);
+    }
+    .brand-emblem-core {
+      width: 4px;
+      height: 4px;
+      background: var(--gold);
+    }
+    .studio-title {
+      font-family: var(--font-brand);
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 4px;
+      font-size: 13px;
+      text-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    .system-status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 1.6s infinite;
+    }
+
+    /* Main Command Navbar */
+    .command-header {
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-panel);
+      backdrop-filter: blur(14px);
+    }
+
+    .project-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 6px;
+      background: linear-gradient(180deg, #ffffff 40%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 15px var(--cyan-glow));
+    }
+    .brand-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 2px;
+    }
+
+    .header-quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-cyan {
+      background: rgba(0, 243, 255, 0.12);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan-glow);
+    }
+    .btn-cyan:hover {
+      background: var(--cyan);
+      color: #03060c;
+      box-shadow: 0 0 25px var(--cyan);
+    }
+
+    .btn-gold {
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+    .btn-gold:hover {
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 0 25px var(--gold);
+    }
+
+    .btn-red {
+      background: rgba(255, 23, 68, 0.15);
+      border: 1px solid var(--red);
+      color: var(--red);
+    }
+    .btn-red:hover {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 0 20px var(--red);
+    }
+
+    /* Main Dashboard Layout Grid */
+    .dashboard-layout {
+      flex: 1;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 310px 1fr 340px;
+      gap: 20px;
+      max-width: 1800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1350px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Cards */
+    .glass-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-cyan);
+      border-radius: 8px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-title::before {
+      content: "";
+      width: 4px;
+      height: 14px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .panel-body {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* Left Control Column Elements */
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      padding: 12px 16px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .control-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .mode-toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .mode-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 10px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .mode-btn.active {
+      background: rgba(0, 243, 255, 0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan-glow);
+      font-weight: 700;
+    }
+
+    /* Center Camera Feed Canvas */
+    .center-viewport-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .canvas-hud-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #02050a;
+      border: 1px solid rgba(0, 243, 255, 0.35);
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    canvas#radarCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* HUD Corner Overlays */
+    .canvas-hud-wrap::before, .canvas-hud-wrap::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--cyan);
+      pointer-events: none;
+      z-index: 10;
+    }
+    .canvas-hud-wrap::before {
+      top: 10px; left: 10px;
+      border-right: none; border-bottom: none;
+    }
+    .canvas-hud-wrap::after {
+      bottom: 10px; right: 10px;
+      border-left: none; border-top: none;
+    }
+
+    /* Top HUD Status Banner */
+    .canvas-banner {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 6px 24px;
+      border-radius: 4px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    .banner-clear {
+      background: rgba(0, 243, 255, 0.15);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan-glow);
+    }
+    .banner-breach {
+      background: rgba(255, 23, 68, 0.35);
+      border: 1px solid var(--red);
+      color: #fff;
+      box-shadow: 0 0 35px var(--red-glow);
+      animation: flashBreach 0.6s infinite alternate;
+    }
+
+    @keyframes flashBreach {
+      from { transform: translateX(-50%) scale(1); }
+      to { transform: translateX(-50%) scale(1.04); }
+    }
+
+    /* Viewport Interactive Toolbar */
+    .viewport-toolbar {
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border-top: 1px solid var(--border-light);
+    }
+
+    .toolbar-tools {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .tool-btn:hover {
+      background: var(--cyan);
+      color: #03060c;
+      border-color: var(--cyan);
+      font-weight: 700;
+    }
+
+    /* Right Column: Incident Telemetry Logs */
+    .incident-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .incident-item {
+      background: var(--bg-card);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 4px 4px 0;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      animation: fadeIn 0.3s ease;
+    }
+    .incident-item.breach {
+      border-left-color: var(--red);
+      background: rgba(255, 23, 68, 0.08);
+    }
+    .incident-time {
+      color: var(--text-muted);
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+    .incident-msg {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Bottom Technical Footer */
+    footer {
+      background: #030508;
+      border-top: 1px solid var(--border-light);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.9); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Studio Ribbon: Mohamed Abdou Productions -->
+  <aside class="studio-top-ribbon">
+    <div class="studio-crest">
+      <div class="brand-emblem"><div class="brand-emblem-core"></div></div>
+      <div class="studio-title">MOHAMED ABDOU PRODUCTIONS</div>
+    </div>
+    <div class="system-status-indicator">
+      <div class="status-dot"></div>
+      <span>SYSTEM OPERATIONAL // LEVEL-4 PERIMETER ACTIVE</span>
+    </div>
+  </aside>
+
+  <!-- Command Navbar -->
+  <header class="command-header">
+    <div class="project-brand">
+      <div class="brand-name">SENTRA</div>
+      <div class="brand-subtitle">// AUTONOMOUS AI GEOFENCING SUITE</div>
+    </div>
+    <div class="header-quick-actions">
+      <button class="btn btn-gold" id="btnAudioAlarm">🔊 ARM AUDIO ALERTS</button>
+      <button class="btn btn-cyan" id="btnExportJson">⬇ EXPORT ZONE CONFIG</button>
+      <button class="btn btn-red" id="btnPanicBreach">⚠ SIMULATE BREACH</button>
+    </div>
+  </header>
+
+  <!-- Dashboard Grid -->
+  <main class="dashboard-layout">
+    
+    <!-- LEFT PANEL: CONTROLS & TELEMETRY -->
+    <section class="glass-panel">
+      <div class="panel-header">
+        <span class="panel-title">Radar Telemetry</span>
+        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--cyan);">CAM-01</span>
+      </div>
+      <div class="panel-body">
+        
+        <div class="metric-card">
+          <div class="metric-label">Inference FPS</div>
+          <div class="metric-value" id="fpsDisplay">60.0</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">Active Targets in Frame</div>
+          <div class="metric-value" id="targetCountDisplay" style="color: var(--cyan);">3</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-label">Breach Status</div>
+          <div class="metric-value" id="breachMetricDisplay" style="color: var(--green); font-size: 1.25rem;">SECURE</div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">Tracking Mode</div>
+          <div class="mode-toggle-group">
+            <button class="mode-btn active" id="btnModeAI">AI VISION (YOLOv8)</button>
+            <button class="mode-btn" id="btnModeMouse">MOUSE SIMULATOR</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">Geometry Verification</div>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+            Anchoring <code>(foot_x, foot_y)</code> ground contact plane against sub-pixel vector polygon.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CENTER PANEL: LIVE VIDEO CANVAS & GEOFENCE STAGE -->
+    <section class="glass-panel center-viewport-panel">
+      <div class="panel-header">
+        <span class="panel-title">Interactive Perimeter Display</span>
+        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+          RES: 1280 × 720 (NORMALIZED)
+        </span>
+      </div>
+
+      <div class="panel-body" style="padding: 12px; gap: 0;">
+        <div class="canvas-hud-wrap" id="canvasContainer">
+          <canvas id="radarCanvas"></canvas>
+          <div id="hudBanner" class="canvas-banner banner-clear">
+            STATUS: PERIMETER CLEAR
+          </div>
+        </div>
+
+        <!-- Canvas Toolbar -->
+        <div class="viewport-toolbar">
+          <div class="toolbar-tools">
+            <button class="tool-btn" id="btnDraftNewZone">⟲ REDRAW / TOGGLE ZONE</button>
+            <button class="tool-btn" id="btnSpawnPatrol">✚ INJECT PATROL TARGET</button>
+            <button class="tool-btn" id="btnClearTargets">✖ PURGE TARGETS</button>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+            CLICK CANVAS TO ANCHOR / MOVE ASSETS
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: INCIDENT FEED & LOGS -->
+    <section class="glass-panel">
+      <div class="panel-header">
+        <span class="panel-title">Real-Time Security Logs</span>
+        <span style="font-family: var(--font-mono); font-size: 11px; color: var(--gold);">DEBOUNCED</span>
+      </div>
+      <div class="panel-body">
+        <div class="incident-feed" id="logContainer">
+          <div class="incident-item">
+            <div class="incident-time">SYSTEM BOOT</div>
+            <div class="incident-msg">SENTRA Geofence vision engine initialized.</div>
+          </div>
+          <div class="incident-item">
+            <div class="incident-time">CALIBRATION</div>
+            <div class="incident-msg">Polygon perimeter loaded: 4 vertices active.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Technical Footer -->
+  <footer>
+    <div>SENTRA &copy; 2026 MOHAMED ABDOU PRODUCTIONS. ALL RIGHTS RESERVED.</div>
+    <div>ALGORITHM: cv2.pointPolygonTest + YOLOv8n FOOT-TRACKING</div>
+  </footer>
+
+  <!-- Interactive JavaScript Engine -->
+  <script>
+    // Audio Synthesizer for Alerts
+    class TacticalAudio {
+      constructor() {
+        this.ctx = null;
+        this.armed = false;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        this.armed = true;
+      }
+      playAlarm() {
+        if (!this.armed || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.2);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.22);
+      }
+      playBlip() {
+        if (!this.armed || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, now);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    const sound = new TacticalAudio();
+
+    // DOM Elements
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
+    const hudBanner = document.getElementById('hudBanner');
+    const fpsDisplay = document.getElementById('fpsDisplay');
+    const targetCountDisplay = document.getElementById('targetCountDisplay');
+    const breachMetricDisplay = document.getElementById('breachMetricDisplay');
+    const logContainer = document.getElementById('logContainer');
+    const btnAudioAlarm = document.getElementById('btnAudioAlarm');
+    const btnModeAI = document.getElementById('btnModeAI');
+    const btnModeMouse = document.getElementById('btnModeMouse');
+
+    // Canvas Auto Resize
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Sound Toggle
+    btnAudioAlarm.addEventListener('click', () => {
+      sound.init();
+      sound.playBlip();
+      btnAudioAlarm.textContent = "🔊 AUDIO ALERTS ARMED";
+      btnAudioAlarm.style.borderColor = "var(--green)";
+      btnAudioAlarm.style.color = "var(--green)";
+      addLog("Audio Alert Synthesizer armed.");
+    });
+
+    // Tracking Mode Toggles
+    let isAiMode = true;
+    btnModeAI.addEventListener('click', () => {
+      isAiMode = true;
+      btnModeAI.classList.add('active');
+      btnModeMouse.classList.remove('active');
+      addLog("Tracking mode changed to AI Vision (YOLOv8).");
+    });
+    btnModeMouse.addEventListener('click', () => {
+      isAiMode = false;
+      btnModeMouse.classList.add('active');
+      btnModeAI.classList.remove('active');
+      addLog("Tracking mode changed to Mouse Simulator.");
+    });
+
+    // Logging Utility
+    function addLog(msg, isBreach = false) {
+      const item = document.createElement('div');
+      item.className = isBreach ? "incident-item breach" : "incident-item";
+      const now = new Date().toTimeString().split(' ')[0];
+      item.innerHTML = `<div class="incident-time">${now}</div><div class="incident-msg">${msg}</div>`;
+      logContainer.prepend(item);
+    }
+
+    // Normalized Perimeter Geofence Zone
+    let zoneNorm = [
+      { x: 0.22, y: 0.24 },
+      { x: 0.78, y: 0.22 },
+      { x: 0.86, y: 0.78 },
+      { x: 0.18, y: 0.82 }
+    ];
+
+    // Simulated Agents
+    class PatrolPerson {
+      constructor(x, y, vx, vy, label) {
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.label = label;
+        this.w = 42;
+        this.h = 95;
+      }
+      update(w, h) {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 50 || this.x > w - 50) this.vx *= -1;
+        if (this.y < 80 || this.y > h - 50) this.vy *= -1;
+      }
+    }
+
+    const targets = [
+      new PatrolPerson(160, 220, 1.4, 0.9, "ID-01 [PATROL]"),
+      new PatrolPerson(680, 440, -1.2, -1.0, "ID-02 [CIVILIAN]"),
+      new PatrolPerson(430, 320, 1.1, -1.2, "ID-03 [UNKNOWN]")
+    ];
+
+    // Point in Polygon Math
+    function isInside(pt, poly) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i].x, yi = poly[i].y;
+        const xj = poly[j].x, yj = poly[j].y;
+        const intersect = ((yi > pt.y) !== (yj > pt.y)) &&
+          (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    // Canvas Interactions
+    let mousePos = { x: -100, y: -100 };
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mousePos.x = e.clientX - rect.left;
+      mousePos.y = e.clientY - rect.top;
+      if (!isAiMode && targets.length > 0) {
+        targets[0].x = mousePos.x;
+        targets[0].y = mousePos.y - targets[0].h / 2;
+      }
+    });
+
+    canvas.addEventListener('click', (e) => {
+      sound.init();
+      sound.playBlip();
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      if (targets.length > 0) {
+        targets[0].x = cx;
+        targets[0].y = cy - targets[0].h / 2;
+        addLog(`Repositioned asset to coordinates (${Math.round(cx)}, ${Math.round(cy)}).`);
+      }
+    });
+
+    // Control Buttons
+    document.getElementById('btnSpawnPatrol').addEventListener('click', () => {
+      sound.init();
+      sound.playBlip();
+      const w = canvas.width, h = canvas.height;
+      const newX = 80 + Math.random() * (w - 160);
+      const newY = 80 + Math.random() * (h - 160);
+      targets.push(new PatrolPerson(newX, newY, (Math.random()-0.5)*2.5, (Math.random()-0.5)*2.5, `ID-0${targets.length+1}`));
+      targetCountDisplay.textContent = targets.length;
+      addLog(`Target injected: ID-0${targets.length}.`);
+    });
+
+    document.getElementById('btnClearTargets').addEventListener('click', () => {
+      targets.length = 0;
+      targetCountDisplay.textContent = 0;
+      addLog("Purged all tracked targets.");
+    });
+
+    document.getElementById('btnDraftNewZone').addEventListener('click', () => {
+      sound.init();
+      sound.playBlip();
+      if (zoneNorm[0].x === 0.22) {
+        zoneNorm = [
+          { x: 0.35, y: 0.30 },
+          { x: 0.65, y: 0.30 },
+          { x: 0.70, y: 0.70 },
+          { x: 0.30, y: 0.70 }
+        ];
+        addLog("Loaded Perimeter Profile B: Center Square.");
+      } else {
+        zoneNorm = [
+          { x: 0.22, y: 0.24 },
+          { x: 0.78, y: 0.22 },
+          { x: 0.86, y: 0.78 },
+          { x: 0.18, y: 0.82 }
+        ];
+        addLog("Loaded Perimeter Profile A: Wide Corridor.");
+      }
+    });
+
+    document.getElementById('btnPanicBreach').addEventListener('click', () => {
+      sound.init();
+      const w = canvas.width, h = canvas.height;
+      targets.forEach(t => {
+        t.x = w * 0.5 + (Math.random() - 0.5) * 80;
+        t.y = h * 0.5 + (Math.random() - 0.5) * 80;
+      });
+      sound.playAlarm();
+      addLog("SIMULATED BREACH: Targets forced into polygon.", true);
+    });
+
+    document.getElementById('btnExportJson').addEventListener('click', () => {
+      sound.init();
+      sound.playBlip();
+      const payload = {
+        version: "1.0.0",
+        producer: "Mohamed Abdou Productions",
+        timestamp: new Date().toISOString(),
+        resolution: { width: 1280, height: 720 },
+        polygon_type: "restricted_perimeter",
+        normalized_vertices: zoneNorm
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "zone_config.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      addLog("Exported zone_config.json normalized schema.");
+    });
+
+    // Main Simulation Render Loop
+    let lastAlertTime = 0;
+    let frames = [];
+
+    function render(ts) {
+      frames.push(ts);
+      while (frames.length > 0 && frames[0] <= ts - 1000) frames.shift();
+      fpsDisplay.textContent = frames.length.toFixed(1);
+
+      const w = canvas.width, h = canvas.height;
+      ctx.fillStyle = "#02050a";
+      ctx.fillRect(0, 0, w, h);
+
+      // Radar Grid
+      ctx.strokeStyle = "rgba(0, 243, 255, 0.05)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 45) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 0; y < h; y += 45) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      // Compute Absolute Zone
+      const absZone = zoneNorm.map(pt => ({ x: pt.x * w, y: pt.y * h }));
+
+      // Evaluate Breaches
+      let breaches = 0;
+      targets.forEach(t => {
+        if (isAiMode) t.update(w, h);
+        const foot = { x: t.x, y: t.y + t.h / 2 };
+        if (isInside(foot, absZone)) breaches++;
+      });
+
+      // Update HUD Banner & Telemetry
+      if (breaches > 0) {
+        hudBanner.className = "canvas-banner banner-breach";
+        hudBanner.textContent = `⚠ INTRUSION DETECTED (${breaches} INSIDE PERIMETER)`;
+        breachMetricDisplay.textContent = "BREACHED";
+        breachMetricDisplay.style.color = "var(--red)";
+
+        if (Date.now() - lastAlertTime > 800) {
+          sound.playAlarm();
+          addLog(`ALERT: ${breaches} person(s) physically inside restricted perimeter!`, true);
+          lastAlertTime = Date.now();
+        }
+      } else {
+        hudBanner.className = "canvas-banner banner-clear";
+        hudBanner.textContent = "STATUS: PERIMETER CLEAR";
+        breachMetricDisplay.textContent = "SECURE";
+        breachMetricDisplay.style.color = "var(--green)";
+      }
+
+      // Draw Polygon
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(absZone[0].x, absZone[0].y);
+      for (let i = 1; i < absZone.length; i++) ctx.lineTo(absZone[i].x, absZone[i].y);
+      ctx.closePath();
+
+      if (breaches > 0) {
+        ctx.fillStyle = "rgba(255, 23, 68, 0.25)";
+        ctx.strokeStyle = "#ff1744";
+        ctx.shadowColor = "#ff1744";
+        ctx.shadowBlur = 20;
+      } else {
+        ctx.fillStyle = "rgba(0, 243, 255, 0.12)";
+        ctx.strokeStyle = "#00f3ff";
+        ctx.shadowColor = "#00f3ff";
+        ctx.shadowBlur = 12;
+      }
+      ctx.lineWidth = 2.5;
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Draw Vertices
+      absZone.forEach((pt, i) => {
+        ctx.fillStyle = breaches > 0 ? "#ff5252" : "#00f3ff";
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.font = "10px 'JetBrains Mono'";
+        ctx.fillText(`V${i+1}`, pt.x + 8, pt.y - 6);
+      });
+
+      // Draw Targets
+      targets.forEach(t => {
+        const foot = { x: t.x, y: t.y + t.h / 2 };
+        const inside = isInside(foot, absZone);
+        const col = inside ? "#ff1744" : "#00f3ff";
+
+        // Bounding Box
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(t.x - t.w / 2, t.y - t.h / 2, t.w, t.h);
+
+        // Header Label Tag
+        ctx.fillStyle = col;
+        ctx.fillRect(t.x - t.w / 2, t.y - t.h / 2 - 18, t.w + 35, 18);
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 9px 'JetBrains Mono'";
+        ctx.fillText(inside ? "INTRUDER" : "CLEAR", t.x - t.w / 2 + 4, t.y - t.h / 2 - 5);
+
+        // Holographic Foot Anchor Line
+        ctx.setLineDash([3, 3]);
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
+        ctx.beginPath();
+        ctx.moveTo(t.x, t.y);
+        ctx.lineTo(foot.x, foot.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Foot Target Crosshair
+        ctx.strokeStyle = col;
+        ctx.beginPath();
+        ctx.arc(foot.x, foot.y, 6, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = inside ? "#ff1744" : "#00e676";
+        ctx.beginPath();
+        ctx.arc(foot.x, foot.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+  </script>
+</body>
+</html>
+

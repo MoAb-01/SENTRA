@@ -503,12 +503,13 @@ export const EdgePerceptionVisual: React.FC = () => {
           paddingTop: '12px',
           borderTop: '1px solid #E2E8F0',
           display: 'flex',
+          flexWrap: 'wrap',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          gap: '16px',
+          gap: '12px 16px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', flex: '1 1 240px' }}>
           <StageStepperIcon step={activeStep} />
           <div>
             <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>

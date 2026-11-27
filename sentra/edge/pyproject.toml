@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentra-edge"
+version = "1.0.0"
+description = "SENTRA Edge Node Engine — YOLOv8n ONNX perception, Ray-Casting geofencing, and SQLite WAL outbox"
+requires-python = ">=3.11"
+dependencies = [
+    "sentra-protocol>=1.0.0",
+    "numpy>=1.26.0",
+    "opencv-python-headless>=4.9.0",
+    "onnxruntime>=1.18.0",
+    "websockets>=13.0",
+    "pydantic>=2.7.0",
+]
+
+[project.scripts]
+sentra-edge = "sentra_edge.main:run_cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sentra_edge*"]

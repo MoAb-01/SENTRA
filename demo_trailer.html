@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTRA // Official Action Trailer — Mohamed Abdou Productions</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@700;900&family=Teko:wght@600;700&family=Montserrat:wght@400;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-glow: rgba(212, 175, 55, 0.7);
+      --cyan: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.6);
+      --red: #ff0534;
+      --red-glow: rgba(255, 5, 52, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* 2.39:1 Theatrical Scope Window */
+    .cinema-container {
+      position: relative;
+      width: 100vw;
+      height: 41.84vw; /* 2.39:1 Scope */
+      max-height: 100vh;
+      max-width: 239vh;
+      background: #000;
+      overflow: hidden;
+      box-shadow: 0 0 100px #000;
+    }
+
+    /* Screen camera shake */
+    .shake {
+      animation: camShake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    @keyframes camShake {
+      10%, 90% { transform: translate3d(-8px, 4px, 0) scale(1.02); }
+      20%, 80% { transform: translate3d(8px, -6px, 0) scale(1.03); }
+      30%, 50%, 70% { transform: translate3d(-10px, 8px, 0) scale(1.04); }
+      40%, 60% { transform: translate3d(10px, -8px, 0) scale(1.02); }
+    }
+
+    /* Red breach strobe on impact */
+    .red-strobe {
+      animation: redFlash 0.5s ease-out;
+    }
+    @keyframes redFlash {
+      0% { filter: contrast(180%) brightness(190%) drop-shadow(0 0 60px var(--red)); }
+      100% { filter: contrast(100%) brightness(100%); }
+    }
+
+    canvas#trailerCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      display: block;
+    }
+
+    /* ========================================================
+       PERMANENT TOP PRODUCTION LOGO (MOHAMED ABDOU PRODUCTIONS)
+       ======================================================== */
+    .permanent-top-branding {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      transition: all 0.4s ease;
+      text-align: center;
+    }
+
+    .brand-logo-crest {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-line {
+      width: 65px;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    .brand-emblem {
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--gold);
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+    .brand-emblem-core {
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+    }
+
+    .brand-studio-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+      font-weight: 900;
+      letter-spacing: 9px;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 0 25px var(--gold-glow);
+      white-space: nowrap;
+    }
+
+    .brand-sub-tag {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-top: 3px;
+      text-shadow: 0 0 8px var(--gold);
+    }
+
+    /* Anamorphic Blue Flare Streak */
+    .anamorphic-flare {
+      position: absolute;
+      top: 50%;
+      left: -20%;
+      width: 140%;
+      height: 2.5px;
+      background: linear-gradient(90deg, transparent, var(--cyan), #fff, var(--cyan), transparent);
+      box-shadow: 0 0 35px 8px var(--cyan);
+      transform: translateY(-50%);
+      opacity: 0;
+      z-index: 15;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .flare-active {
+      opacity: 0.95;
+    }
+
+    /* Film Grain / Grit */
+    .film-grain {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.85) 100%),
+                  repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 2px);
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    /* Subliminal Flash */
+    .strobe-flash {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #fff;
+      opacity: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    /* ========================================================
+       CINEMATIC ACTION SMASH TITLES (CENTER SCREEN)
+       ======================================================== */
+    .trailer-text-center {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 18;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+      padding: 0 40px;
+    }
+
+    .title-intro-cue {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.85rem, 1.8vw, 1.5rem);
+      letter-spacing: 12px;
+      color: var(--gold);
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      text-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .title-impact-main {
+      font-family: 'Teko', sans-serif;
+      font-size: clamp(5.5rem, 16vw, 13rem);
+      font-weight: 700;
+      line-height: 0.85;
+      letter-spacing: 16px;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: scale(1.4);
+      filter: blur(14px);
+      transition: opacity 0.2s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+      color: #fff;
+      text-shadow: 0 10px 50px rgba(0,0,0,0.9);
+    }
+
+    .title-tag-desc {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: clamp(0.8rem, 2vw, 1.7rem);
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #e2e8f0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+    }
+
+    /* Smash text activation */
+    .show-titles .title-intro-cue {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .show-titles .title-impact-main {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0px);
+    }
+    .show-titles .title-tag-desc {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Red War Breach Theme */
+    .theme-breach .title-impact-main {
+      color: #fff;
+      background: linear-gradient(180deg, #ffffff 25%, #ff0534 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 45px rgba(255, 5, 52, 0.95));
+    }
+    .theme-breach .title-tag-desc {
+      color: #ff3b00;
+      text-shadow: 0 0 25px rgba(255, 59, 0, 0.9);
+    }
+
+    /* Tactical HUD Corner Telemetry */
+    .hud-element {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.45);
+      z-index: 12;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hud-tl { top: 22px; left: 30px; }
+    .hud-tr { top: 22px; right: 30px; }
+    .hud-bl { bottom: 22px; left: 30px; }
+    .hud-br { bottom: 22px; right: 30px; }
+
+    .rec-pulse-dot {
+      width: 10px; height: 10px;
+      background: var(--red);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--red);
+      animation: pulseDot 0.6s infinite alternate;
+    }
+    @keyframes pulseDot { from { opacity: 1; transform: scale(1); } to { opacity: 0.2; transform: scale(0.7); } }
+
+    /* Theatrical Director Control Deck */
+    .director-deck {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 82%;
+      max-width: 860px;
+      background: rgba(10, 12, 18, 0.88);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      padding: 10px 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      z-index: 35;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+    }
+
+    .action-play-btn {
+      background: var(--gold);
+      border: none;
+      color: #000;
+      font-family: 'Teko', sans-serif;
+      font-size: 1.45rem;
+      letter-spacing: 2px;
+      padding: 3px 20px;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .action-play-btn:hover {
+      box-shadow: 0 0 25px var(--gold);
+      transform: scale(1.05);
+    }
+
+    .action-progress-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      position: relative;
+      cursor: pointer;
+    }
+    .action-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold), var(--cyan), var(--red));
+      box-shadow: 0 0 12px var(--cyan);
+    }
+
+    .shot-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    /* Start Cinematic Curtain */
+    .cinema-start-curtain {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #0c0f17 0%, #000 85%);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.5s ease;
+    }
+    .cinema-start-curtain.dismissed {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .curtain-logo {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3.2vw, 2.6rem);
+      letter-spacing: 16px;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-shadow: 0 0 35px var(--gold-glow);
+      margin-bottom: 6px;
+    }
+    .curtain-tag {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.75rem, 1.2vw, 1rem);
+      letter-spacing: 8px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 35px;
+    }
+
+    .curtain-play-disc {
+      width: 95px;
+      height: 95px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 45px var(--gold-glow);
+      margin-bottom: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .curtain-play-disc svg {
+      width: 38px; height: 38px; fill: var(--gold); margin-left: 6px;
+    }
+    .cinema-start-curtain:hover .curtain-play-disc {
+      transform: scale(1.15);
+      box-shadow: 0 0 75px var(--gold);
+    }
+
+    .curtain-audio-notice {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cinema-container" id="cinemaScreen">
+
+    <!-- PERMANENT TOP BRANDING: MOHAMED ABDOU PRODUCTIONS -->
+    <header class="permanent-top-branding">
+      <div class="brand-logo-crest">
+        <div class="brand-line"></div>
+        <div class="brand-emblem"><div class="brand-emblem-core"></div></div>
+        <div class="brand-studio-title">MOHAMED ABDOU PRODUCTIONS</div>
+        <div class="brand-emblem"><div class="brand-emblem-core"></div></div>
+        <div class="brand-line"></div>
+      </div>
+      <div class="brand-sub-tag">CINEMATIC AI DEFENSE // OFFICIAL MOTION PICTURE</div>
+    </header>
+
+    <!-- Optical Blue Anamorphic Flare -->
+    <div class="anamorphic-flare" id="anamorphicStreak"></div>
+
+    <!-- Canvas Simulation Engine (Military Night Vision, Real-Time YOLOv8 Foot Anchors, Sector Lasers) -->
+    <canvas id="trailerCanvas"></canvas>
+
+    <!-- Noise, Vignette, Strobe Flash -->
+    <div class="film-grain"></div>
+    <div class="strobe-flash" id="flashEffect"></div>
+
+    <!-- Center Theatrical Smash Titles -->
+    <div class="trailer-text-center" id="textStage">
+      <div class="title-intro-cue" id="cueIntro"></div>
+      <div class="title-impact-main" id="cueMain"></div>
+      <div class="title-tag-desc" id="cueDesc"></div>
+    </div>
+
+    <!-- Corner HUD Telemetry -->
+    <div class="hud-element hud-tl">
+      <div class="rec-pulse-dot"></div>
+      <span>OPTICAL RADAR SATELLITE 04</span>
+    </div>
+    <div class="hud-element hud-tr">
+      <span>AI ENGINE: YOLOv8-NANO // GROUND-FOOT TRUTH</span>
+    </div>
+    <div class="hud-element hud-bl">
+      <span>ZONE: HIGH-SECURITY MILITARY GEOFENCE</span>
+    </div>
+    <div class="hud-element hud-br">
+      <span>PERIMETER BREACH TEST // ZERO LATENCY</span>
+    </div>
+
+    <!-- Theatrical Playback Deck -->
+    <div class="director-deck">
+      <button class="action-play-btn" id="playToggleBtn">▶ PLAY</button>
+      <div class="action-progress-bar" id="progressTrack">
+        <div class="action-progress-fill" id="progressFill"></div>
+      </div>
+      <span class="shot-badge" id="shotBadge">ACT 1 // THE OPENING</span>
+    </div>
+
+    <!-- Initial Launch Curtain (Unlocks Audio Synthesizer) -->
+    <div class="cinema-start-curtain" id="startCurtain">
+      <div class="curtain-logo">MOHAMED ABDOU PRODUCTIONS</div>
+      <div class="curtain-tag">PRESENTS AN ACTION TRAILER</div>
+      <div class="curtain-play-disc">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      </div>
+      <div class="curtain-audio-notice">CLICK TO COMMENCE ACTION TRAILER (ARMED WITH THEATRICAL AUDIO)</div>
+    </div>
+
+  </div>
+
+  <script>
+    // ========================================================
+    // HOLLYWOOD ACTION SOUND SYNTHESIZER (INCEPTION BRAAMS & BOMBS)
+    // ========================================================
+    class HollywoodSoundtrack {
+      constructor() {
+        this.ctx = null;
+        this.armed = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+        this.armed = true;
+      }
+
+      // Massive Hollywood Braam (Low Brass Horn)
+      playBraam(freq = 60, duration = 2.4) {
+        if (!this.armed) return;
+        const now = this.ctx.currentTime;
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const dist = this.ctx.createWaveShaper();
+        const gain = this.ctx.createGain();
+
+        // Distortion curve
+        const curve = new Float32Array(256);
+        for (let i = 0; i < 256; ++i) {
+          let x = (i * 2) / 256 - 1;
+          curve[i] = (Math.PI + 5) * x / (Math.PI + 5 * Math.abs(x));
+        }
+        dist.curve = curve;
+
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(freq, now);
+        osc1.frequency.exponentialRampToValueAtTime(freq * 0.45, now + duration);
+
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(freq * 1.5, now);
+        osc2.frequency.exponentialRampToValueAtTime(freq * 0.6, now + duration);
+
+        gain.gain.setValueAtTime(0.45, now);
+        gain.gain.linearRampToValueAtTime(0.65, now + 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc1.connect(dist);
+        osc2.connect(dist);
+        dist.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + duration);
+        osc2.stop(now + duration);
+      }
+
+      // Gunshot / Sub Impact Thud
+      playImpact() {
+        if (!this.armed) return;
+        const now = this.ctx.currentTime;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(25, now + 0.45);
+        gain.gain.setValueAtTime(0.7, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.45);
+
+        // Crack noise
+        const bufferSize = this.ctx.sampleRate * 0.08;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.4, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        noise.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+        noise.start(now);
+      }
+
+      // Tactical Alarm Screamer
+      playAlarmStrobe() {
+        if (!this.armed) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(1100, now);
+        osc.frequency.linearRampToValueAtTime(320, now + 0.16);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      }
+    }
+
+    const sound = new HollywoodSoundtrack();
+
+    // ========================================================
+    // ACTION TRAILER SCENE TIMELINE (30 SECONDS TOTAL)
+    // ========================================================
+    const TOTAL_DURATION = 30.0;
+
+    const ACTION_CUTS = [
+      {
+        id: "ACT I // THE PRODUCER",
+        start: 0.0,
+        end: 4.8,
+        intro: "PRODUCED & DIRECTED BY",
+        main: "MOHAMED ABDOU",
+        desc: "A NEXT-GENERATION AUTONOMOUS VISION THRILLER",
+        theme: "gold",
+        onCut: () => {
+          sound.playBraam(55, 2.5);
+          shakeScreen();
+        }
+      },
+      {
+        id: "ACT II // THE FLAW",
+        start: 4.8,
+        end: 9.8,
+        intro: "EVERY CAMERA HAS BLIND SPOTS",
+        main: "FALSE ALARMS",
+        desc: "BOUNDING BOXES ARE BLIND GUESSWORK. UNTIL TODAY.",
+        theme: "dark",
+        onCut: () => {
+          sound.playImpact();
+          shakeScreen();
+        }
+      },
+      {
+        id: "ACT III // THE WEAPON",
+        start: 9.8,
+        end: 15.0,
+        intro: "SENTRA VISION INTELLIGENCE",
+        main: "FOOT GEOMETRY",
+        desc: "TRACKING EXACT CENTIMETER GROUND-CONTACT CONTACT POINTS",
+        theme: "radar",
+        onCut: () => {
+          sound.playBraam(68, 2.0);
+          triggerAnamorphicFlare();
+          shakeScreen();
+        }
+      },
+      {
+        id: "ACT IV // GEOFENCE ENGAGED",
+        start: 15.0,
+        end: 20.0,
+        intro: "MULTI-VERTEX SPATIAL LOCK",
+        main: "LOCK THE ZONE",
+        desc: "MATHEMATICAL POINT-IN-POLYGON REAL-TIME RAY-CASTING",
+        theme: "radar",
+        onCut: () => {
+          sound.playImpact();
+          triggerAnamorphicFlare();
+        }
+      },
+      {
+        id: "ACT V // INTRUSION BREACH",
+        start: 20.0,
+        end: 25.5,
+        intro: "TACTICAL RED ALERT // SECTOR 04",
+        main: "HOSTILE INTRUDER",
+        desc: "PERIMETER PENETRATION DETECTED // IMMEDIATE INTERCEPT",
+        theme: "theme-breach",
+        onCut: () => {
+          sound.playBraam(44, 3.0);
+          sound.playAlarmStrobe();
+          flashScreen();
+          shakeScreen(true);
+        }
+      },
+      {
+        id: "ACT VI // TITLE FINALE",
+        start: 25.5,
+        end: 30.0,
+        intro: "THE FUTURE OF AUTONOMOUS SURVEILLANCE",
+        main: "S E N T R A",
+        desc: "MOHAMED ABDOU PRODUCTIONS // 2026",
+        theme: "gold",
+        onCut: () => {
+          sound.playBraam(38, 3.8);
+          sound.playImpact();
+          triggerAnamorphicFlare();
+          shakeScreen();
+        }
+      }
+    ];
+
+    // DOM References
+    const cinemaScreen = document.getElementById('cinemaScreen');
+    const canvas = document.getElementById('trailerCanvas');
+    const ctx = canvas.getContext('2d');
+    const anamorphicStreak = document.getElementById('anamorphicStreak');
+    const flashEffect = document.getElementById('flashEffect');
+    const textStage = document.getElementById('textStage');
+    const cueIntro = document.getElementById('cueIntro');
+    const cueMain = document.getElementById('cueMain');
+    const cueDesc = document.getElementById('cueDesc');
+    const playToggleBtn = document.getElementById('playToggleBtn');
+    const progressFill = document.getElementById('progressFill');
+    const shotBadge = document.getElementById('shotBadge');
+    const startCurtain = document.getElementById('startCurtain');
+
+    function resizeCanvas() {
+      const rect = cinemaScreen.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Cinematic Visual FX
+    function shakeScreen(intense = false) {
+      cinemaScreen.classList.remove('shake');
+      void cinemaScreen.offsetWidth;
+      cinemaScreen.classList.add('shake');
+      if (intense) {
+        cinemaScreen.classList.add('red-strobe');
+        setTimeout(() => cinemaScreen.classList.remove('red-strobe'), 450);
+      }
+    }
+
+    function triggerAnamorphicFlare() {
+      anamorphicStreak.classList.add('flare-active');
+      setTimeout(() => anamorphicStreak.classList.remove('flare-active'), 400);
+    }
+
+    function flashScreen() {
+      flashEffect.style.opacity = '0.9';
+      setTimeout(() => { flashEffect.style.opacity = '0'; }, 50);
+      setTimeout(() => { flashEffect.style.opacity = '0.6'; }, 100);
+      setTimeout(() => { flashEffect.style.opacity = '0'; }, 180);
+    }
+
+    // Playback Engine
+    let isPlaying = false;
+    let currentClock = 0.0;
+    let lastFrame = null;
+    let activeCutIndex = -1;
+
+    function launchCurtain() {
+      sound.init();
+      startCurtain.classList.add('dismissed');
+      isPlaying = true;
+      playToggleBtn.textContent = "❚❚ PAUSE";
+      lastFrame = performance.now();
+      requestAnimationFrame(actionLoop);
+    }
+
+    startCurtain.addEventListener('click', launchCurtain);
+    playToggleBtn.addEventListener('click', () => {
+      sound.init();
+      isPlaying = !isPlaying;
+      playToggleBtn.textContent = isPlaying ? "❚❚ PAUSE" : "▶ RESUME";
+      if (isPlaying) {
+        lastFrame = performance.now();
+        requestAnimationFrame(actionLoop);
+      }
+    });
+
+    // Master Animation Frame Loop
+    function actionLoop(timestamp) {
+      if (!isPlaying) return;
+
+      if (!lastFrame) lastFrame = timestamp;
+      const delta = (timestamp - lastFrame) / 1000;
+      lastFrame = timestamp;
+
+      currentClock += delta;
+      if (currentClock > TOTAL_DURATION) {
+        currentClock = TOTAL_DURATION;
+        isPlaying = false;
+        playToggleBtn.textContent = "↺ REPLAY";
+      }
+
+      // Progress Tracker
+      const pct = (currentClock / TOTAL_DURATION) * 100;
+      progressFill.style.width = `${pct}%`;
+
+      // Active Scene Cut Selection
+      const cut = ACTION_CUTS.find(c => currentClock >= c.start && currentClock < c.end) || ACTION_CUTS[ACTION_CUTS.length - 1];
+      const cutIdx = ACTION_CUTS.indexOf(cut);
+
+      if (cutIdx !== activeCutIndex) {
+        activeCutIndex = cutIdx;
+        shotBadge.textContent = cut.id;
+
+        // Cut text out then smash back in
+        textStage.className = "trailer-text-center";
+        setTimeout(() => {
+          cueIntro.textContent = cut.intro;
+          cueMain.textContent = cut.main;
+          cueDesc.textContent = cut.desc;
+          if (cut.theme === 'theme-breach') textStage.classList.add('theme-breach');
+          textStage.classList.add('show-titles');
+        }, 80);
+
+        if (cut.onCut) cut.onCut();
+      }
+
+      // Draw Visual Elements
+      renderVisualGraphics(cut, currentClock);
+
+      if (isPlaying) {
+        requestAnimationFrame(actionLoop);
+      }
+    }
+
+    // Dynamic Action Graphics (Night Vision Radar & Foot Position Crosshairs)
+    function renderVisualGraphics(cut, time) {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Deep Black Cinema Background
+      ctx.fillStyle = "#010307";
+      ctx.fillRect(0, 0, w, h);
+
+      // Radar Sweeper Beam
+      const sweepAngle = (time * 3.5) % (Math.PI * 2);
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, w * 0.75, sweepAngle, sweepAngle + 0.35);
+      ctx.closePath();
+      const sweepGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, w * 0.75);
+      sweepGrad.addColorStop(0, "rgba(0, 240, 255, 0.22)");
+      sweepGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = sweepGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // Polygon Geofence Coordinates
+      const poly = [
+        { x: w * 0.28, y: h * 0.26 },
+        { x: w * 0.76, y: h * 0.23 },
+        { x: w * 0.84, y: h * 0.78 },
+        { x: w * 0.20, y: h * 0.82 }
+      ];
+
+      // Render Geofence
+      const isBreachAct = cut.theme === 'theme-breach';
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(poly[0].x, poly[0].y);
+      for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i].x, poly[i].y);
+      ctx.closePath();
+
+      if (isBreachAct) {
+        const strobeGlow = Math.sin(time * 20) * 0.5 + 0.5;
+        ctx.fillStyle = `rgba(255, 5, 52, ${0.3 + strobeGlow * 0.35})`;
+        ctx.strokeStyle = "#ff0534";
+        ctx.shadowColor = "#ff0534";
+        ctx.shadowBlur = 35;
+        ctx.lineWidth = 4;
+      } else {
+        ctx.fillStyle = "rgba(0, 240, 255, 0.08)";
+        ctx.strokeStyle = "#00f0ff";
+        ctx.shadowColor = "#00f0ff";
+        ctx.shadowBlur = 18;
+        ctx.lineWidth = 2.5;
+      }
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // Infiltration Actors (Acts 3, 4, 5)
+      if (cut.start >= 9.8 && cut.start < 25.5) {
+        const progress = (time - cut.start) / (cut.end - cut.start);
+
+        let px, py, isBreaching;
+        if (isBreachAct) {
+          // Direct Breach into middle of zone
+          px = w * 0.25 + progress * (w * 0.35);
+          py = h * 0.60 - Math.sin(progress * 4) * 30;
+          isBreaching = true;
+          if (Math.random() < 0.15) sound.playAlarmStrobe();
+        } else {
+          // Patrol skirting the outside perimeter
+          px = w * 0.12 + progress * (w * 0.10);
+          py = h * 0.50;
+          isBreaching = false;
+        }
+
+        renderTacticalTarget(px, py, isBreaching, time);
+      }
+
+      // Tactical HUD scope reticles
+      drawTacticalScopeReticles(w, h);
+    }
+
+    // Hostile Bounding Box + Ground Foot Target Lock
+    function renderTacticalTarget(x, y, isBreaching, time) {
+      const color = isBreaching ? "#ff0534" : "#00f0ff";
+      const w = 55;
+      const h = 125;
+      const footX = x;
+      const footY = y + h / 2;
+
+      // Outer Bracket Bounding Box
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = isBreaching ? 20 : 10;
+
+      // Tactical Corner Brackets
+      const len = 14;
+      const bx = x - w/2;
+      const by = y - h/2;
+
+      ctx.beginPath();
+      // TL
+      ctx.moveTo(bx, by + len); ctx.lineTo(bx, by); ctx.lineTo(bx + len, by);
+      // TR
+      ctx.moveTo(bx + w - len, by); ctx.lineTo(bx + w, by); ctx.lineTo(bx + w, by + len);
+      // BL
+      ctx.moveTo(bx, by + h - len); ctx.lineTo(bx, by + h); ctx.lineTo(bx + len, by + h);
+      // BR
+      ctx.moveTo(bx + w - len, by + h); ctx.lineTo(bx + w, by + h); ctx.lineTo(bx + w, by + h - len);
+      ctx.stroke();
+
+      // Holographic Foot Anchor Ray (The Sentra Innovation)
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = "#fff";
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(footX, footY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Pulsing Foot Ground Target Crosshair
+      const pRad = 8 + Math.sin(time * 12) * 3;
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      ctx.arc(footX, footY, pRad, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = isBreaching ? "#ff0534" : "#00ff77";
+      ctx.beginPath();
+      ctx.arc(footX, footY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Target Label
+      ctx.fillStyle = color;
+      ctx.font = "bold 12px 'JetBrains Mono'";
+      ctx.fillText(isBreaching ? "☠ HOSTILE INTRUDER DETECTED" : "✓ PERIMETER CLEAR", bx - 10, by - 12);
+    }
+
+    // Sniper Reticles & Theatrical Scopes
+    function drawTacticalScopeReticles(w, h) {
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+      ctx.lineWidth = 1;
+
+      // Central cross-mark
+      const cx = w / 2;
+      const cy = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - 20, cy); ctx.lineTo(cx + 20, cy);
+      ctx.moveTo(cx, cy - 20); ctx.lineTo(cx + 20, cy);
+      ctx.stroke();
+
+      // Range brackets
+      ctx.strokeRect(40, 40, w - 80, h - 80);
+    }
+  </script>
+</body>
+</html>

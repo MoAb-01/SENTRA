@@ -141,7 +141,7 @@ export const PrivacyPolicy: React.FC = () => {
             background: '#FFFFFF',
             border: '1px solid #E2E8F0',
             borderRadius: '16px',
-            padding: '40px 36px',
+            padding: 'clamp(22px, 5vw, 40px)',
             boxShadow: '0 10px 30px rgba(15, 23, 42, 0.04)',
           }}
         >

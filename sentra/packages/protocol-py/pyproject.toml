@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentra-protocol"
+version = "1.0.0"
+description = "SENTRA Binary Wire Protocol v1, AES-256-GCM framing, and Pydantic v2 data contracts"
+requires-python = ">=3.11"
+dependencies = [
+    "cryptography>=42.0.0",
+    "pydantic>=2.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sentra_protocol*"]
